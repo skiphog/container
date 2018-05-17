@@ -1,1 +1,2 @@
-# Simple static registry Container
+# Very small static registry container.
+This is a test package.
