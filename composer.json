@@ -1,6 +1,6 @@
 {
   "name": "skiphog/container",
-  "description": "Small registry container",
+  "description": "Very small static registry container. This is a test package.",
   "keywords": [
     "Container"
   ],
