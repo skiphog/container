@@ -3,7 +3,7 @@
 
     <testsuites>
         <testsuite name="Test Container">
-            <directory phpVersionOperator=">=" phpVersion="7.1">tests</directory>
+            <directory phpVersionOperator=">=" phpVersion="7.2">tests</directory>
         </testsuite>
     </testsuites>
 

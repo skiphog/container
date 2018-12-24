@@ -30,7 +30,7 @@ class Container
      * @param string $name
      *
      * @return object|mixed
-     * @throws \Exception
+     * @throws \Throwable
      */
     public static function get($name)
     {
@@ -39,16 +39,11 @@ class Container
         }
 
         if (array_key_exists($name, self::$definitions)) {
-            $item = self::$definitions[$name];
-
-            return self::$registry[$name] = $item instanceof \Closure ? $item() : $item;
+            return self::$registry[$name] = self::$definitions[$name] instanceof \Closure ?
+                call_user_func(self::$definitions[$name]) : self::$definitions[$name];
         }
 
-        if ($instance = static::autoResolve($name)) {
-            return self::$registry[$name] = $instance;
-        }
-
-        throw new \InvalidArgumentException('Unknown service [ ' . $name . ' ]');
+        return self::$registry[$name] = static::autoResolve($name);
     }
 
     /**
@@ -72,18 +67,18 @@ class Container
      * @param string $name
      *
      * @return bool|object
-     * @throws \Exception
+     * @throws \Throwable
      */
     protected static function autoResolve($name)
     {
         if (!class_exists($name)) {
-            return false;
+            throw new ContainerException("Unknown service [ {$name} ]");
         }
 
         $reflectionClass = new \ReflectionClass($name);
 
         if (!$reflectionClass->isInstantiable()) {
-            throw new \InvalidArgumentException('Unable to instance [ ' . $name . ' ]');
+            throw new ContainerException("Unable to instance [ {$name} ]");
         }
 
         if (!$constructor = $reflectionClass->getConstructor()) {
@@ -94,8 +89,8 @@ class Container
             $args = array_map(function (\ReflectionParameter $param) {
                 return static::get($param->getClass()->getName());
             }, $constructor->getParameters());
-        } catch (\Exception $e) {
-            throw new \InvalidArgumentException('Unable to resolve complex dependencies [ ' . $name . ' ]');
+        } catch (\Throwable $e) {
+            throw new ContainerException("Unable to resolve complex dependencies [ {$name} ]");
         }
 
         return $reflectionClass->newInstanceArgs($args);
