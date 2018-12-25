@@ -43,7 +43,7 @@ class Container
                 call_user_func(self::$definitions[$name]) : self::$definitions[$name];
         }
 
-        return self::$registry[$name] = static::autoResolve($name);
+        return static::autoResolve($name);
     }
 
     /**
